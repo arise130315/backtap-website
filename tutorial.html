@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>详细教程 — 快捷翻译 SnapTranslate</title>
-  <meta name="description" content="快捷翻译使用教程。" />
+  <title>使用教程 — 快捷识屏</title>
+  <meta name="description" content="快捷识屏使用教程。" />
+
+  <link rel="icon" type="image/png" href="public/images/logo2.png" />
+  <link rel="apple-touch-icon" href="public/images/logo2.png" />
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,73 +20,80 @@
         extend: {
           colors: {
             brand: { DEFAULT: "#007AFF", hover: "#0a84ff" },
-            ink: { 900: "#000000", 800: "#0a0a0a", 700: "#111111", 600: "#1d1d1f" },
-            fg: { primary: "#f5f5f7", secondary: "#a1a1a6", muted: "#86868b" },
+            ink: {
+              900: "#1d1d1f",
+              700: "#333333",
+              500: "#6e6e73",
+              400: "#86868b",
+              200: "#d2d2d7",
+              100: "#f5f5f7",
+              50:  "#f3f9fe",
+            },
           },
           fontFamily: {
             sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "sans-serif"],
           },
           letterSpacing: { tight: "-0.02em", tighter: "-0.03em" },
+          maxWidth: { container: "1320px" },
         },
       },
     };
   </script>
 
   <style>
-    html, body { background-color: #000; color: #f5f5f7; -webkit-font-smoothing: antialiased; }
-    ::selection { background: rgba(0, 122, 255, 0.4); }
+    html, body { background-color: #ffffff; color: #1d1d1f; -webkit-font-smoothing: antialiased; }
+    ::selection { background: rgba(0, 122, 255, 0.18); }
 
-    .fade-up {
-      opacity: 0;
-      transform: translateY(24px);
-      animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    }
-    .fade-up-1 { animation-delay: 0s; }
-    .fade-up-2 { animation-delay: 0.1s; }
-
-    @keyframes fadeUp {
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+    .reveal.in { opacity: 1; transform: translateY(0); }
 
     .nav-scrolled {
-      background-color: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      background-color: rgba(255, 255, 255, 0.72);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     }
   </style>
 </head>
-<body class="font-sans bg-ink-900 text-fg-primary">
+<body class="font-sans bg-white text-ink-900">
 
   <header id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent">
-    <nav class="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between">
-      <a href="index.html" class="flex items-center gap-2 text-sm font-medium tracking-tight">
-        <img src="public/images/logo.png" alt="快捷翻译 Logo" class="w-7 h-7 rounded-md" />
-        <span data-i18n="brand">快捷翻译</span>
+    <nav class="mx-auto max-w-container px-8 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2.5">
+        <img src="public/images/logo2.png" alt="快捷识屏 Logo" class="w-7 h-7 rounded-md" />
+        <svg data-brand-zh width="75.6" height="18" viewBox="0 0 84 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14.5234 11.9135C15.0003 13.0667 15.7084 14.0685 16.6477 14.9189C17.6015 15.7694 18.8515 16.5189 20.3978 17.1676L18.707 19.7189C16.1347 18.4937 14.2344 16.7712 13.006 14.5514C12.5291 15.4739 11.8572 16.3459 10.9901 17.1676C10.1375 17.9892 8.99584 18.8541 7.56518 19.7622L6.02613 17.6432V19.6324H3.25151V0L6.02613 0.108108V4.34595L6.82817 3.54595C7.05939 3.77658 7.57963 4.35315 8.38889 5.27568V2.94054H11.2502V0L14.0682 0.108108V2.94054H18.642V9.1027H20.051V11.9135H14.5234ZM0 11.373C0.231218 10.3495 0.44076 9.10991 0.628625 7.65405C0.830941 6.18378 0.961001 4.82883 1.01881 3.58919L3.14312 3.80541C3.09977 5.03063 2.99139 6.47207 2.81797 8.12973C2.65901 9.77297 2.50005 10.9766 2.34109 11.7405L0 11.373ZM6.02613 17.1459C7.48569 16.3243 8.59843 15.5171 9.36434 14.7243C10.1303 13.9171 10.6577 12.9802 10.9467 11.9135H7.13164V9.1027H11.2502V5.72973H8.7574L9.36434 6.46486L7.50015 8.43243C7.19667 7.94234 6.70533 7.24324 6.02613 6.33514V17.1459ZM15.824 9.1027V5.72973H14.0682V9.1027H15.824Z" fill="#0B0B0D"/>
+          <path d="M38.6577 16.973C39.6549 16.973 40.652 16.9514 41.6491 16.9081L41.1072 19.3081C39.7488 19.3658 38.7444 19.3946 38.0941 19.3946C37.6606 19.3946 37.0103 19.3802 36.1432 19.3514C34.8137 19.3081 33.701 19.1423 32.805 18.8541C31.9235 18.5802 31.1504 18.0973 30.4856 17.4054C30.0232 18.2847 29.344 19.1495 28.448 20L26.7789 18.3135C26.6344 18.6595 26.3887 18.9189 26.0419 19.0919C25.7095 19.2649 25.2109 19.3946 24.5462 19.4811L23.3323 19.6324L22.5519 16.8432L23.4407 16.6919C23.8164 16.6342 24.0693 16.5477 24.1993 16.4324C24.3439 16.3027 24.4161 16.0721 24.4161 15.7405V12.2378C23.5635 12.4829 22.8482 12.6991 22.2701 12.8865L21.8149 10.0757L24.4161 9.38378V6.2054H22.6386V3.52432H24.4161V0.151352L27.0173 0.25946V3.52432H28.3396V6.2054H27.0173V8.62703C27.0751 8.61261 27.3858 8.51892 27.9494 8.34595L28.0361 9.51351L28.2312 11.1135L27.7977 11.2432L27.0173 11.4811V16.6703C27.0173 17.1315 26.9884 17.5063 26.9306 17.7946C27.6243 17.1171 28.1228 16.4324 28.4263 15.7405C28.7298 15.0342 28.9176 14.0973 28.9899 12.9297L31.5694 13.1459C31.5405 13.5207 31.4827 14.0036 31.396 14.5946C31.8007 15.3009 32.3426 15.827 33.0218 16.173V12.5189H28.9466V10.4432H33.0218V9.64324H28.4913V7.43784H33.0218V6.63784H29.0766V4.54054H33.0218V3.78378H28.7731V1.49189H33.0218V0.129729L35.688 0.237837V1.49189H40.717V3.78378H35.688V4.54054H40.1534V7.37297H41.1722V9.66486H40.1534V12.5189H35.688V13.4486H40.4786V15.6757H35.688V16.8865C36.0348 16.9153 36.3022 16.9297 36.4901 16.9297C37.4438 16.9586 38.1664 16.973 38.6577 16.973ZM37.6389 7.48108V6.63784H35.688V7.48108H37.6389ZM37.6389 9.55676H35.688V10.4432H37.6389V9.55676Z" fill="#0B0B0D"/>
+          <path d="M46.5562 0.151352C46.9753 0.583784 47.4883 1.18919 48.0952 1.96757C48.7166 2.73153 49.1935 3.35856 49.5259 3.84865L47.3149 5.92432C47.0114 5.41982 46.5273 4.72793 45.8625 3.84865C45.2122 2.96937 44.6992 2.32793 44.3235 1.92432L46.5562 0.151352ZM50.7831 11.6973V1.03784H61.4264V11.6973H50.7831ZM58.4784 3.87027H53.7529V8.92973H58.4784V3.87027ZM43.7165 6.46486H48.3553V14.0541C48.9478 13.4919 49.432 13.0523 49.8077 12.7351L50.5664 15.6757L47.9652 17.9027C47.4449 18.3495 47.0186 18.7459 46.6862 19.0919L44.9738 16.9081C45.2339 16.6486 45.4001 16.3964 45.4723 16.1514C45.5446 15.9063 45.588 15.5387 45.6024 15.0486V9.4054H43.7165V6.46486ZM48.8322 18.0324C49.5981 17.2541 50.3424 16.3315 51.0649 15.2649C51.7875 14.1982 52.4089 13.1315 52.9291 12.0649L55.4653 13.5135C54.9595 14.5225 54.3164 15.6252 53.5361 16.8216C52.7702 18.0036 52.0548 19.0054 51.3901 19.827L48.8322 18.0324ZM59.2154 12.0649C59.7501 12.7135 60.4148 13.6216 61.2096 14.7892C62.0045 15.9568 62.6692 16.9802 63.2039 17.8595L60.646 19.8919C60.1981 18.9838 59.6056 17.9387 58.8686 16.7568C58.1315 15.5604 57.4451 14.5153 56.8093 13.6216L59.2154 12.0649Z" fill="#0B0B0D"/>
+          <path d="M69.4983 6.52973V8.45405C69.4983 10.991 69.3104 13.1532 68.9347 14.9405C68.5589 16.7135 68.017 18.2991 67.3089 19.6973L64.3175 18.4649C64.8522 17.427 65.2713 16.4541 65.5748 15.5459C65.8783 14.6378 66.1095 13.564 66.2684 12.3243C66.4274 11.0847 66.5069 9.54955 66.5069 7.71892V0.670271H83.2196V6.52973H69.4983ZM80.2283 4.12973V3.11351H69.4983V4.12973H80.2283ZM84 12.6919V15.2865H80.5751V19.5027H77.7571V15.2865H74.744C74.5562 16.2378 74.231 17.045 73.7686 17.7081C73.3062 18.3856 72.598 19.1207 71.6443 19.9135L69.3465 18.1189C70.1125 17.4991 70.676 16.9946 71.0373 16.6054C71.4131 16.2018 71.6804 15.7622 71.8394 15.2865H69.4332V12.6919H72.1428V11.1568H70.0402V8.60541H72.1862L71.5576 7.09189L74.4839 6.74595L75.1993 8.60541H77.562L78.3857 6.76757L81.3988 7.13513L80.6401 8.60541H83.1763V11.1568H80.5751V12.6919H84ZM74.9825 12.6919H77.7571V11.1568H74.9825V12.6919Z" fill="#0B0B0D"/>
+        </svg>
+        <span data-brand-en class="hidden font-bold text-base tracking-tight">QuickScreen</span>
       </a>
-
-      <div class="flex items-center gap-4">
-        <button id="lang-toggle" class="text-[13px] text-fg-secondary hover:text-fg-primary transition-colors" aria-label="Toggle language">EN</button>
-        <a href="#" class="text-[13px] font-medium px-4 h-8 inline-flex items-center rounded-full border border-white/25 text-fg-primary hover:border-white/60 hover:bg-white/5 transition-all" data-i18n="nav.download">立即下载</a>
-      </div>
+      <button id="lang-toggle" class="text-sm text-ink-500 hover:text-ink-900 transition-colors" aria-label="Toggle language">英文</button>
     </nav>
   </header>
 
-  <main class="min-h-screen bg-ink-900 pt-32 pb-24">
-    <div class="mx-auto max-w-6xl px-6">
-      <h1 class="fade-up fade-up-1 text-4xl md:text-5xl font-semibold tracking-tighter text-center mb-16" data-i18n="tutorial.title">
-        详细教程
+  <main class="min-h-screen pt-32 pb-24 md:pt-40">
+    <div class="mx-auto max-w-3xl px-8">
+      <h1 class="reveal in text-4xl md:text-5xl font-semibold tracking-tighter text-center mb-16" data-i18n="tutorial.title">
+        使用教程
       </h1>
 
-      <div class="fade-up fade-up-2 space-y-6">
-        <img src="public/images/img1.png" alt="教程图 1" class="w-full h-auto rounded-2xl" />
-        <img src="public/images/img2.png" alt="教程图 2" class="w-full h-auto rounded-2xl" />
-        <div class="text-center pt-16 text-4xl md:text-5xl font-semibold tracking-tighter" data-i18n="tutorial.done">
+      <div class="space-y-6">
+        <img src="public/images/img1.png" alt="教程图 1" class="reveal w-full h-auto rounded-2xl border border-ink-200/60" />
+        <img src="public/images/img2.png" alt="教程图 2" class="reveal w-full h-auto rounded-2xl border border-ink-200/60" />
+        <div class="reveal text-center pt-16 text-4xl md:text-5xl font-semibold tracking-tighter" data-i18n="tutorial.done">
           完成 🎉
         </div>
       </div>
     </div>
   </main>
+
+  <footer class="bg-white border-t border-ink-200/60 mt-24">
+    <div class="mx-auto max-w-container px-8 py-10 text-center text-xs text-ink-400">
+      © 2026 快捷识屏. All rights reserved.
+    </div>
+  </footer>
 
   <script>
     const navbar = document.getElementById("navbar");
@@ -94,33 +104,38 @@
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add("in");
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: "0px 0px -80px 0px" });
+    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+
     const dict = {
       zh: {
-        brand: "快捷翻译",
-        "nav.download": "立即下载",
-        "tutorial.title": "详细教程",
+        "tutorial.title": "使用教程",
         "tutorial.done": "完成 🎉",
       },
       en: {
-        brand: "SnapTranslate",
-        "nav.download": "Download",
         "tutorial.title": "Tutorial",
         "tutorial.done": "Done 🎉",
       },
     };
-
     let lang = "zh";
     const toggleBtn = document.getElementById("lang-toggle");
-
     const applyLang = () => {
       document.documentElement.lang = lang;
       document.querySelectorAll("[data-i18n]").forEach((el) => {
         const key = el.getAttribute("data-i18n");
         if (dict[lang][key]) el.textContent = dict[lang][key];
       });
-      toggleBtn.textContent = lang === "zh" ? "EN" : "中";
+      document.querySelectorAll("[data-brand-zh]").forEach(el => el.classList.toggle("hidden", lang !== "zh"));
+      document.querySelectorAll("[data-brand-en]").forEach(el => el.classList.toggle("hidden", lang !== "en"));
+      toggleBtn.textContent = lang === "zh" ? "英文" : "中文";
     };
-
     toggleBtn.addEventListener("click", () => {
       lang = lang === "zh" ? "en" : "zh";
       applyLang();
