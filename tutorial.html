@@ -10,9 +10,6 @@
   <link rel="apple-touch-icon" href="public/images/logo2.png" />
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <script>
     tailwind.config = {
@@ -41,6 +38,15 @@
   </script>
 
   <style>
+    /* Inter — 本地自托管 Variable 字体,覆盖 100-900 全部字重 */
+    @font-face {
+      font-family: "Inter";
+      src: url("public/fonts/InterVariable.woff2") format("woff2");
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
     html, body { background-color: #ffffff; color: #1d1d1f; -webkit-font-smoothing: antialiased; }
     ::selection { background: rgba(0, 122, 255, 0.18); }
 

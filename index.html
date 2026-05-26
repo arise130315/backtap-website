@@ -13,9 +13,6 @@
   <link rel="apple-touch-icon" href="public/images/logo2.png" />
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <script>
     tailwind.config = {
@@ -44,6 +41,15 @@
   </script>
 
   <style>
+    /* Inter — 本地自托管 Variable 字体,覆盖 100-900 全部字重 */
+    @font-face {
+      font-family: "Inter";
+      src: url("public/fonts/InterVariable.woff2") format("woff2");
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
     /* Alibaba PuHuiTi 2.0 — 用户提供本地文件,仅 105 Heavy 字重(对应 font-weight 800/900) */
     @font-face {
       font-family: "Alibaba PuHuiTi 2.0";
