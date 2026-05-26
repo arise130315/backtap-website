@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>隐私政策 — 快捷识屏</title>
+  <meta name="description" content="快捷识屏隐私政策。" />
+
+  <link rel="icon" type="image/png" href="public/images/logo2.png" />
+  <link rel="apple-touch-icon" href="public/images/logo2.png" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: {
+              900: "#1d1d1f", 700: "#333333", 500: "#6e6e73",
+              400: "#86868b", 200: "#d2d2d7", 100: "#f5f5f7", 50: "#f3f9fe",
+            },
+          },
+          fontFamily: {
+            sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "sans-serif"],
+          },
+          letterSpacing: { tight: "-0.02em", tighter: "-0.03em" },
+          maxWidth: { container: "1320px" },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    @font-face {
+      font-family: "Alibaba PuHuiTi 2.0";
+      src: url("public/fonts/AlibabaPuHuiTi-2-105-Heavy.ttf") format("truetype");
+      font-weight: 800 900;
+      font-style: normal;
+      font-display: swap;
+    }
+    .font-puhuiti {
+      font-family: "Alibaba PuHuiTi 2.0", "PingFang SC", -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    }
+
+    html { background-color: #ffffff; }
+    body { color: #1d1d1f; -webkit-font-smoothing: antialiased; }
+    .nav-scrolled {
+      background-color: rgba(255, 255, 255, 0.72);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+    .prose h2 { font-weight: 600; font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 1rem; color: #1d1d1f; letter-spacing: -0.02em; }
+    .prose h3 { font-weight: 600; font-size: 1.125rem; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #1d1d1f; }
+    .prose p { color: #6e6e73; line-height: 1.8; margin-bottom: 1rem; }
+    .prose ul { list-style: disc; padding-left: 17px; color: #6e6e73; line-height: 1.8; margin-bottom: 1rem; }
+    .prose ul li { margin-bottom: 0.5rem; }
+    .prose a { color: #007AFF; text-decoration: underline; }
+    .prose strong { color: #1d1d1f; font-weight: 600; }
+  </style>
+</head>
+<body class="font-sans text-ink-900">
+
+  <header id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent">
+    <nav class="mx-auto max-w-container px-6 md:px-8 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2.5">
+        <img src="public/images/logo2.png" alt="快捷识屏 Logo" class="w-6 h-6 md:w-7 md:h-7 rounded-md" />
+        <span class="font-semibold text-base tracking-tight">快捷识屏</span>
+      </a>
+      <a href="index.html" class="text-sm text-ink-500 hover:text-ink-900 transition-colors">返回首页</a>
+    </nav>
+  </header>
+
+  <main class="pt-32 pb-24">
+    <div class="mx-auto max-w-3xl px-6 md:px-8">
+      <h1 class="font-puhuiti text-4xl md:text-5xl font-extrabold tracking-tighter mb-4">隐私政策</h1>
+      <p class="text-sm text-ink-400 mb-12">最后更新：2026 年 5 月 25 日</p>
+
+      <div class="prose">
+        <p>欢迎使用「快捷识屏」（以下简称"本应用"）。我们深知隐私的重要性。本政策旨在向您说明本应用如何收集、使用和保护您的信息。请在使用本应用前仔细阅读。</p>
+
+        <h2>一、我们收集的信息</h2>
+
+        <h3>1. 您主动提供的信息</h3>
+        <ul>
+          <li>当您使用「快捷翻译」或「快捷分析」功能时，本应用会临时获取您当前屏幕的截图内容，仅用于本次识别与翻译/分析。</li>
+          <li>当您订阅 Pro 版本时，付款信息由 Apple App Store 处理，本应用不会接触您的支付凭证、银行卡号等敏感数据。</li>
+        </ul>
+
+        <h3>2. 自动收集的信息</h3>
+        <ul>
+          <li>设备型号、iOS 版本、应用版本（仅用于兼容性优化与崩溃诊断）。</li>
+          <li>崩溃日志：仅在应用异常时生成，<strong>不包含任何屏幕截图或个人内容</strong>。</li>
+        </ul>
+
+        <h2>二、信息的使用</h2>
+        <ul>
+          <li><strong>本地处理优先</strong>：屏幕识别（OCR）、翻译、分析功能优先在设备本地完成，不上传任何数据。</li>
+          <li><strong>按需云端调用</strong>：当本地能力不足时（如复杂语种翻译、AI 内容分析），仅将必要的文本片段加密传输至云端服务，不会上传完整截图或图像。</li>
+          <li><strong>不留存内容</strong>：所有屏幕内容仅在本次操作期间于内存中处理，操作完成后立即销毁，不会在服务器或本地长期保存。</li>
+        </ul>
+
+        <h2>三、第三方服务</h2>
+        <p>本应用可能调用以下第三方服务来完成翻译与分析任务：</p>
+        <ul>
+          <li>大语言模型 API（用于内容理解与智能分析）</li>
+          <li>翻译服务 API（用于多语种互译）</li>
+          <li>Apple 系统级服务（如系统翻译、Live Text）</li>
+        </ul>
+        <p>上述服务各有其隐私政策，仅处理本次请求所必需的数据，请求结束后不进行持久化存储。</p>
+
+        <h2>四、数据安全</h2>
+        <p>我们采用业界通用的传输加密（HTTPS / TLS）保护您与服务端之间的通信。请理解，任何互联网传输都无法保证 100% 安全。</p>
+
+        <h2>五、儿童隐私</h2>
+        <p>本应用不面向 13 岁以下儿童设计，亦不有意收集儿童个人信息。如发现误收集，我们会立即删除相关数据。</p>
+
+        <h2>六、您的权利</h2>
+        <p>您可以：</p>
+        <ul>
+          <li>随时停止使用本应用并删除所有本地数据。</li>
+          <li>通过电子邮件联系我们，了解或行使您的数据相关权利。</li>
+          <li>在 iOS「设置 → 隐私与安全性」中管理本应用的系统权限。</li>
+        </ul>
+
+        <h2>七、政策变更</h2>
+        <p>我们可能不时更新本隐私政策。重大变更将通过应用内通知或更新日志告知您。建议您定期回访本页面。</p>
+
+        <h2>八、联系我们</h2>
+        <p>如对本政策有任何疑问、建议或投诉，请通过以下方式联系：</p>
+        <p>邮箱：<a href="mailto:arise130315@gmail.com">arise130315@gmail.com</a></p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-white border-t border-ink-200/60 mt-16">
+    <div class="mx-auto max-w-container px-6 md:px-8 py-10 text-center text-xs text-ink-400">
+      © 2026 快捷识屏. All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    const navbar = document.getElementById("navbar");
+    const onScroll = () => {
+      if (window.scrollY > 8) navbar.classList.add("nav-scrolled");
+      else navbar.classList.remove("nav-scrolled");
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  </script>
+</body>
+</html>

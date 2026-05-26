@@ -56,7 +56,7 @@
       font-family: "Alibaba PuHuiTi 2.0", "PingFang SC", -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
     }
 
-    html { background-color: #ffffff; }
+    html { background-color: #ffffff; scroll-behavior: smooth; scroll-padding-top: 80px; }
     body { color: #1d1d1f; -webkit-font-smoothing: antialiased; }
     ::selection { background: rgba(0, 122, 255, 0.18); }
 
@@ -182,8 +182,33 @@
         <span data-brand-en class="hidden font-bold text-base tracking-tight">QuickScreen</span>
       </a>
 
-      <button id="lang-toggle" class="text-sm text-ink-500 hover:text-ink-900 transition-colors" aria-label="Toggle language">英文</button>
+      <!-- Desktop menu -->
+      <div class="hidden md:flex items-center gap-6 text-sm text-ink-500">
+        <a href="#features" class="hover:text-ink-900 transition-colors">核心功能</a>
+        <a href="#faq" class="hover:text-ink-900 transition-colors">常见问题</a>
+        <a href="#contact" class="hover:text-ink-900 transition-colors">联系方式</a>
+      </div>
+
+      <!-- Mobile hamburger -->
+      <button id="menu-toggle" class="md:hidden flex items-center justify-center w-10 h-10 -mr-2 text-ink-900" aria-label="菜单" aria-expanded="false">
+        <svg id="icon-menu" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="4" y1="7" x2="20" y2="7"/>
+          <line x1="4" y1="12" x2="20" y2="12"/>
+          <line x1="4" y1="17" x2="20" y2="17"/>
+        </svg>
+        <svg id="icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="hidden">
+          <line x1="6" y1="6" x2="18" y2="18"/>
+          <line x1="6" y1="18" x2="18" y2="6"/>
+        </svg>
+      </button>
     </nav>
+
+    <!-- Mobile dropdown -->
+    <div id="mobile-menu" class="md:hidden hidden bg-white/95 backdrop-blur-xl border-t border-ink-200/60">
+      <a href="#features" class="block px-6 py-4 text-base text-ink-700 hover:bg-ink-50 transition-colors">核心功能</a>
+      <a href="#faq" class="block px-6 py-4 text-base text-ink-700 hover:bg-ink-50 transition-colors">常见问题</a>
+      <a href="#contact" class="block px-6 py-4 text-base text-ink-700 hover:bg-ink-50 transition-colors">联系方式</a>
+    </div>
   </header>
 
   <main>
@@ -423,7 +448,7 @@
   </main>
 
   <!-- Footer -->
-  <footer class="bg-white border-t border-ink-200/60">
+  <footer id="contact" class="bg-white border-t border-ink-200/60">
     <div class="mx-auto max-w-container px-6 md:px-8 py-10 md:py-14">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-8">
         <div class="flex items-center gap-2.5">
@@ -436,11 +461,11 @@
           </svg>
           <span data-brand-en class="hidden font-bold text-base tracking-tight">QuickScreen</span>
         </div>
-        <nav class="flex flex-wrap gap-x-8 gap-y-3 text-sm text-ink-500">
-          <a href="tutorial.html" class="hover:text-ink-900 transition-colors" data-i18n="footer.tutorial">使用教程</a>
-          <a href="#" class="hover:text-ink-900 transition-colors" data-i18n="footer.privacy">隐私政策</a>
-          <a href="#" class="hover:text-ink-900 transition-colors" data-i18n="footer.terms">服务条款</a>
-          <a href="mailto:hello@example.com" class="hover:text-ink-900 transition-colors" data-i18n="footer.contact">联系方式</a>
+        <nav class="flex flex-wrap gap-6 text-sm text-ink-500">
+          <a href="tutorial.html" class="hover:text-ink-900 transition-colors">使用教程</a>
+          <a href="privacy.html" class="hover:text-ink-900 transition-colors">隐私政策</a>
+          <a href="mailto:arise130315@gmail.com?subject=%E5%BF%AB%E6%8D%B7%E8%AF%86%E5%B1%8F%E2%80%94%E9%97%AE%E9%A2%98%E5%8F%8D%E9%A6%88" class="hover:text-ink-900 transition-colors">问题反馈</a>
+          <a href="mailto:arise130315@gmail.com" class="hover:text-ink-900 transition-colors">arise130315@gmail.com</a>
         </nav>
       </div>
       <div class="mt-10 pt-6 border-t border-ink-200/60 text-xs text-ink-400 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
@@ -471,78 +496,26 @@
     }, { threshold: 0.1, rootMargin: "0px 0px -80px 0px" });
     document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
 
-    // i18n
-    const dict = {
-      zh: {
-        "hero.subtitle": "一款极简的识屏工具，轻敲手机背面，即可快速对当前屏幕进行翻译/分析，所见即所得。",
-        "hero.cta": "iOS下载",
-        "features.title": "它能够干什么呢？",
-        "features.card1.title": "快捷翻译",
-        "features.card1.desc": "轻敲背面，对当前屏幕的外文进行识别，保留原版面布局的前提下翻译显示。",
-        "features.card2.title": "快捷分析",
-        "features.card2.desc": "轻敲背面，支持对当前屏幕内容进行快速智能分析解读。",
-        "faq.title": "常见问题",
-        "faq.q1": "如何启用「轻敲背面」？",
-        "faq.a1": "进入 iOS「设置 → 辅助功能 → 触控 → 轻点背面」，绑定「快捷识屏」的快捷指令即可。轻敲背面两下或三下任你选择。",
-        "faq.q2": "支持哪些语言？",
-        "faq.a2": "支持中、英、日、韩、法、德、西、俄等 100+ 主流语言互译。",
-        "faq.q3": "数据是否会上传到服务器？",
-        "faq.a3": "优先使用设备本地能力进行识别。仅在调用云端翻译/分析时按需上传所需文本，不存储个人隐私数据。",
-        "faq.q4": "需要付费订阅吗？",
-        "faq.a4": "提供免费基础版，Pro 订阅版可解锁更高频次的智能分析与离线模型。",
-        "cta.title": "一款极简的识屏工具",
-        "cta.subtitle": "哪里不会就点哪里～",
-        "cta.button": "iOS下载",
-        "footer.tutorial": "使用教程",
-        "footer.privacy": "隐私政策",
-        "footer.terms": "服务条款",
-        "footer.contact": "联系方式",
-        "footer.note": "一款极简的识屏工具",
-      },
-      en: {
-        "hero.subtitle": "A minimalist screen-recognition tool. Tap the back of your phone to instantly translate or analyze your screen — what you see is what you get.",
-        "hero.cta": "Download for iOS",
-        "features.title": "What can it do?",
-        "features.card1.title": "Quick Translate",
-        "features.card1.desc": "Tap to recognize foreign text on your screen and translate it in-place, preserving the original layout.",
-        "features.card2.title": "Quick Analyze",
-        "features.card2.desc": "Tap to get instant AI-powered analysis of whatever is on your screen.",
-        "faq.title": "FAQ",
-        "faq.q1": "How do I enable Back Tap?",
-        "faq.a1": "Go to Settings → Accessibility → Touch → Back Tap, and bind the QuickScreen shortcut to a double or triple tap.",
-        "faq.q2": "Which languages are supported?",
-        "faq.a2": "100+ mainstream languages including English, Chinese, Japanese, Korean, French, German, Spanish, Russian, etc.",
-        "faq.q3": "Is my data uploaded to a server?",
-        "faq.a3": "On-device recognition is prioritized. Only text required for cloud translation/analysis is sent on demand. No personal data is stored.",
-        "faq.q4": "Do I need a subscription?",
-        "faq.a4": "There's a free tier. Pro unlocks higher analysis quotas and offline models.",
-        "cta.title": "A minimalist screen-recognition tool",
-        "cta.subtitle": "Just tap wherever you don't know.",
-        "cta.button": "Download for iOS",
-        "footer.tutorial": "Tutorial",
-        "footer.privacy": "Privacy",
-        "footer.terms": "Terms",
-        "footer.contact": "Contact",
-        "footer.note": "A minimalist screen-recognition tool",
-      },
-    };
-
-    let lang = "zh";
-    const toggleBtn = document.getElementById("lang-toggle");
-    const applyLang = () => {
-      document.documentElement.lang = lang;
-      document.querySelectorAll("[data-i18n]").forEach((el) => {
-        const key = el.getAttribute("data-i18n");
-        if (dict[lang][key]) el.textContent = dict[lang][key];
+    // Mobile menu toggle
+    const menuToggle = document.getElementById("menu-toggle");
+    const mobileMenu = document.getElementById("mobile-menu");
+    const iconMenu = document.getElementById("icon-menu");
+    const iconClose = document.getElementById("icon-close");
+    if (menuToggle && mobileMenu) {
+      const setOpen = (open) => {
+        mobileMenu.classList.toggle("hidden", !open);
+        iconMenu.classList.toggle("hidden", open);
+        iconClose.classList.toggle("hidden", !open);
+        menuToggle.setAttribute("aria-expanded", String(open));
+      };
+      menuToggle.addEventListener("click", () => {
+        setOpen(mobileMenu.classList.contains("hidden"));
       });
-      document.querySelectorAll("[data-brand-zh]").forEach(el => el.classList.toggle("hidden", lang !== "zh"));
-      document.querySelectorAll("[data-brand-en]").forEach(el => el.classList.toggle("hidden", lang !== "en"));
-      toggleBtn.textContent = lang === "zh" ? "英文" : "中文";
-    };
-    toggleBtn.addEventListener("click", () => {
-      lang = lang === "zh" ? "en" : "zh";
-      applyLang();
-    });
+      mobileMenu.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => setOpen(false));
+      });
+    }
   </script>
+
 </body>
 </html>
