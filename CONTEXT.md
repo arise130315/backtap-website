@@ -67,6 +67,28 @@
 > - 留给下次的尾巴
 > ```
 
+### 2026-05-27 (续 4) (Claude Code) - 图片 WebP 化 + logo 降分辨率
+- 用户决策:图片转 WebP + logo 降到 512×512。
+- 工具:`brew install webp`(新装,得 cwebp 1.6.0);ffmpeg 不带 libwebp 编译选项,转 WebP 用 cwebp 不用 ffmpeg。
+- 改动:
+  - **logo2.png 降到 512×512 + 重量化**:用 sips 缩到 512(覆盖)后,因为 sips 重新编码丢了 pngquant 的 256 色板,文件反而从 82K 涨到 184K,**再用 pngquant quality 70-90 量化一次**回到 32K。最终给 `<link rel="icon"|apple-touch-icon>` 用。
+  - **3 张 PNG 转 WebP**(cwebp -q 80 -m 6):
+    - logo2.png 32K → logo2.webp 15K(-53%)
+    - img1.png 66K → img1.webp 39K(-42%)
+    - img2.png 28K → img2.webp 24K(-12%,img2 本身简单图,WebP 优势小)
+  - **HTML 引用切换**(用 Edit replace_all):3 个 HTML 里所有 `<img src="public/images/logo2.png">` 改为 `logo2.webp`(5 处);tutorial.html 里 `img1.png/img2.png` 改为 `.webp`(2 处);**保留 `<link rel="icon"|apple-touch-icon>` 指向 logo2.png** 给老浏览器 / RSS / 桌面快捷方式兼容。
+  - **删除 img1.png 和 img2.png**(已不被任何 HTML 引用);logo2.png 保留(favicon 用)
+- 关键改动文件:
+  - `public/images/logo2.png`(从 1024×1024 → 512×512,重新量化,82K → 32K)
+  - `public/images/logo2.webp`(新增,15K)
+  - `public/images/img1.webp` / `img2.webp`(新增,共 63K)
+  - `public/images/img1.png` / `img2.png`(删除)
+  - `index.html` / `privacy.html` / `tutorial.html`(5+1+1 处 img src 改 webp)
+- **最终 public/ = 1.9MB**(从最初 23MB,累计省 92%)
+- 留给下次的尾巴:
+  - WebP 兼容性:Chrome/Firefox/Safari 14+/Edge 全部支持,Safari < 14 用户(2020 之前的 Mac/iOS)会看不到 logo 和教程图。如果担心,可以加 `<picture>` fallback 标签,但目前不做。
+  - PuHuiTi 字体 984KB 仍是最大单文件(占 1.9MB 的一半),如果还想再瘦,子集化是最有效手段(可压到 80-150KB)
+
 ### 2026-05-27 (续 3) (Claude Code) - 字体瘦身:删 Inter + PuHuiTi TTF→WOFF2
 - 用户决策:
   - Inter 字体太冗余,改用系统字体兜底(macOS/iOS 走 -apple-system + PingFang SC,Windows 走 Microsoft YaHei)
