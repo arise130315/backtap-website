@@ -67,6 +67,21 @@
 > - 留给下次的尾巴
 > ```
 
+### 2026-05-27 (续 5) (Claude Code) - 视频 poster + preload 调整
+- 用户反馈国内访问慢、视频看不见。诊断后确认:
+  - 视频文件本身没问题(Range / faststart / 编码全过)
+  - 真正瓶颈是 Vercel 跨境网络(只有备案 → 切腾讯云 CDN 能根治)
+  - 加剧"看不见"感受的两个因素:① video 标签 `preload="metadata"` 滚到才开始下载;② 没有 poster 占位,加载前是黑/透明
+- 改动:
+  - ffmpeg 提取两个视频首帧 → cwebp 转 WebP(quality 75):
+    - `public/images/poster_快捷翻译.webp` 37K
+    - `public/images/poster_快捷分析.webp` 40K
+  - index.html 第 335 / 352 行两个 video 标签:
+    - `preload="metadata"` → `preload="auto"`(加速开始下载视频)
+    - 新增 `poster="public/images/poster_..."`(加载前显示静态首帧,不再空白)
+- 效果:首次访问时即便视频还没加载完,用户也能立刻看到一张静态图,**视觉上不再"什么都没"**;同时视频在后台并行下载,用户滚到时多半已就绪。
+- public/ 增加 ~76K(两张 poster),从 1.9M → ~2.0M。不影响整体瘦身成果。
+
 ### 2026-05-27 (续 4) (Claude Code) - 图片 WebP 化 + logo 降分辨率
 - 用户决策:图片转 WebP + logo 降到 512×512。
 - 工具:`brew install webp`(新装,得 cwebp 1.6.0);ffmpeg 不带 libwebp 编译选项,转 WebP 用 cwebp 不用 ffmpeg。
