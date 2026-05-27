@@ -67,6 +67,27 @@
 > - 留给下次的尾巴
 > ```
 
+### 2026-05-27 (续 3) (Claude Code) - 字体瘦身:删 Inter + PuHuiTi TTF→WOFF2
+- 用户决策:
+  - Inter 字体太冗余,改用系统字体兜底(macOS/iOS 走 -apple-system + PingFang SC,Windows 走 Microsoft YaHei)
+  - 阿里巴巴普惠体保留,但 TTF → WOFF2 减体积
+- 改动:
+  - 3 个 HTML 的 `tailwind.config.fontFamily.sans` 数组**去除 "Inter"**,保留剩余系统字体栈
+  - 3 个 HTML 删除 Inter @font-face 整块
+  - index.html / privacy.html 的 PuHuiTi @font-face 的 `src` 从 `.ttf` `format("truetype")` 改为 `.woff2` `format("woff2")`(tutorial.html 不用 PuHuiTi,无需改)
+  - 用 `woff2_compress` 工具(brew install woff2)将 PuHuiTi TTF 转 WOFF2:1.9MB → 984KB(无损,Brotli 内压)
+  - 删除 `public/fonts/InterVariable.woff2`(344KB)
+  - 删除 `public/fonts/AlibabaPuHuiTi-2-105-Heavy.ttf`(1.9MB)
+- **最终 public/ 大小:2.0MB**(从最初 23MB,累计省 91%)
+- 关键改动文件:
+  - `public/fonts/AlibabaPuHuiTi-2-105-Heavy.woff2`(新增,984K)
+  - `public/fonts/AlibabaPuHuiTi-2-105-Heavy.ttf`(删除)
+  - `public/fonts/InterVariable.woff2`(删除)
+  - `index.html` / `privacy.html` / `tutorial.html`(3 处 Edit:sans 去 Inter、删 Inter @font-face、PuHuiTi src 换 woff2)
+- 留给下次的尾巴:
+  - 用户在浏览器验证字体效果:正文应跟之前差不多(因为之前 Inter 也是字体栈第一位,但实际多数中文场景早就走 PingFang/PuHuiTi),英文部分会变成系统默认 sans-serif
+  - 如果用户觉得英文字体也想要专门的视觉,可以选 WOFF2 子集版的 Inter 或者保留少数字重(只 400/600 两个) → 减体积 80%
+
 ### 2026-05-27 (续 2) (Claude Code) - 媒体二次压缩 + 清理无引用视频
 - 用户要求进一步压缩。
 - 删除两个无 HTML 引用的视频:`教程.mp4`(3.0MB)、`效果展示.mp4`(1.1MB),立省 4.1MB。
