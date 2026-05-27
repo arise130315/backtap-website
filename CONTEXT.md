@@ -22,7 +22,7 @@
 
 - **软接入合规风险**:`.cn` 解析到境外属灰色,小概率被工信部要求整改。监控点是 DNSPod 后台收到通知。**应对**:被要求时启动 ICP 备案(资产已就绪,见 `DEPLOYMENT.md` 备用路径)。
 - **国内访问首屏 2-5 秒**:Vercel 没大陆节点。**当前可接受**,如未来访问量起来后觉得慢,走 ICP 备案 → 切腾讯云 CDN(文件已躺在 COS 里)。
-- `public/images/logo2.png` 1.1MB 偏大,后续可用 tinypng 压到 100KB 内。
+- ~~`public/images/logo2.png` 1.1MB 偏大~~ **已压(2026-05-27 续):logo2/img1/img2 + 3 个大视频统一压缩,public/ 从 23MB → 8.3MB**。
 - Tailwind 走 `cdn.tailwindcss.com`,Vercel 站点国内访问也尚可,不阻塞。
 
 ## 下一步打算
@@ -66,6 +66,26 @@
 > - 关键改动文件
 > - 留给下次的尾巴
 > ```
+
+### 2026-05-27 (续) (Claude Code) - 媒体压缩
+- 用户反馈国内访问慢、图片/视频加载慢,做媒体资源压缩。
+- 根本原因(已和用户讲清楚):Vercel 没大陆节点,跨境 RTT 是结构性瓶颈,**只有走 ICP 备案 + 国内 CDN 才能根治**。今天做的是次要原因(资源体积)的优化。
+- **压缩成果**:public/ 从 23MB → 8.3MB(省 64%)
+  - logo2.png 1.1MB → 84KB(pngquant quality 70-90,保持 1024×1024)
+  - img1.png 1.3MB → 140KB(sips 缩放 3854→1920px + pngquant)
+  - img2.png 535KB → 60KB(同上)
+  - 快捷分析.mp4 6.6MB → 904KB(libx264 CRF 28 + faststart + 去音轨,原码率 11Mbps 严重过高)
+  - 快捷翻译.mp4 6.5MB → 788KB(原码率 8.7Mbps)
+  - 教程.mp4 4.0MB → 3.0MB(原码率 2.2Mbps 本来就合理,压幅有限)
+  - 效果展示.mp4 不动(原本就 0.9Mbps)
+- 所有 MP4 加了 `-movflags +faststart`,moov atom 前置 → 视频边下边播。
+- 关键工具:ffmpeg 8.1.1(已装)、pngquant(brew 装的)、sips(macOS 自带)
+- 关键改动文件:`public/images/*.png` 3 个、`public/videos/*.mp4` 3 个
+- commit:`f0a8836 Compress media: public/ 23MB -> 8.3MB (-64%)`(已 push,Vercel 自动重新部署中)
+- 留给下次的尾巴:
+  - 用户在浏览器看一下视觉质量是否能接受(CRF 28 是行业常用网页视频参数,肉眼几乎无差,但用户是设计师,以他眼睛为准)
+  - 如果觉得质量损失大 → 用 CRF 23 重压(体积稍大,质量更好)
+  - 真正解决"国内访问慢"还是要走备案 → 腾讯云 CDN
 
 ### 2026-05-27 (Claude Code)
 - **网站上线**:走 Vercel + DNSPod 软接入路径,放弃 ICP 备案。
