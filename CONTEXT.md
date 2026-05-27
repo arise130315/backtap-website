@@ -58,6 +58,23 @@
 
 下次会话说"**开始备案**"或"**轻量服务器要续费了**",Claude 按上面清单逐步引导。
 
+### 关于服务器未来用途(已和用户对齐)
+
+**最终架构(备案通过后)**:
+
+```
+backtap.cn / www       → Vercel(静态官网,不变)
+api.backtap.cn         → 轻量服务器(iOS app 后端 API,以后做)
+cdn.backtap.cn(可选)   → 腾讯云 COS(用户上传的图/视频)
+```
+
+**关键原则**:
+- 服务器**不替代 Vercel** 跑静态官网(Vercel 已经是静态站最优解,自建劣化)
+- 服务器价值在**跑 iOS app 后端 API**,用子域 `api.backtap.cn`
+- 当前 iOS app 还在做,**后端 API 暂不急**,服务器先纯作为备案资源占位
+
+**iOS app 进入"需要后端"阶段时,启动信号**:用户在会话里说"开始做 iOS app 后端" → Claude 帮装环境(Node.js/Python + MySQL + Nginx)+ 写第一版登录/注册 API。
+
 ---
 
 ## 历史备份(原下一步打算)
