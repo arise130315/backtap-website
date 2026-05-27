@@ -58,22 +58,46 @@
 
 下次会话说"**开始备案**"或"**轻量服务器要续费了**",Claude 按上面清单逐步引导。
 
-### 关于服务器未来用途(已和用户对齐)
+### 关于服务器未来用途(已和用户对齐) **决策已变更**
+
+> **变更原因**:用户实际国内访问 Vercel 太慢,改用国内服务器作为官网主源。
 
 **最终架构(备案通过后)**:
 
 ```
-backtap.cn / www       → Vercel(静态官网,不变)
-api.backtap.cn         → 轻量服务器(iOS app 后端 API,以后做)
-cdn.backtap.cn(可选)   → 腾讯云 COS(用户上传的图/视频)
+                  backtap.cn / www
+                         │
+        ┌────────────────┴────────────────┐
+        │                                  │
+   主流量(95%)                       灾备(5%)
+        │                                  │
+   轻量服务器(广州)                  Vercel
+   ├─ Nginx 跑静态站                 └─ 留着,DNS 平时不指,出问题切回
+   ├─ HTML / CSS / 字体
+   ├─ 视频(可选搬 COS)
+   ├─ 备案号挂 footer
+   └─ HTTPS(Let's Encrypt 或腾讯云免费证书)
 ```
 
 **关键原则**:
-- 服务器**不替代 Vercel** 跑静态官网(Vercel 已经是静态站最优解,自建劣化)
-- 服务器价值在**跑 iOS app 后端 API**,用子域 `api.backtap.cn`
-- 当前 iOS app 还在做,**后端 API 暂不急**,服务器先纯作为备案资源占位
+- 服务器**作为 backtap.cn 主源站**,因为国内访问 Vercel 跨境延迟太大
+- **Vercel 不删**,作为灾备(代码继续 push GitHub,Vercel 自动同步),服务器挂了 DNS 切回去 5 分钟恢复
+- 3M 带宽约束:对小流量个人站够用,如果将来用户量起来,升级带宽包或加腾讯云 CDN
+- iOS app 后端 API 用 `api.backtap.cn` 子域(还是这台服务器,以后做)
 
-**iOS app 进入"需要后端"阶段时,启动信号**:用户在会话里说"开始做 iOS app 后端" → Claude 帮装环境(Node.js/Python + MySQL + Nginx)+ 写第一版登录/注册 API。
+**备案通过后的迁移步骤(到时候 Claude 陪做)**:
+
+1. SSH 登录服务器(腾讯云控制台一键登录)
+2. `yum install nginx` 装 Nginx
+3. `rsync ~/Desktop/iOS_SnapTranslate_website/ user@ip:/var/www/` 上传文件
+4. 配 nginx.conf(Claude 写好,用户复制粘贴)
+5. Let's Encrypt 签 HTTPS 证书 + cron 自动续期
+6. DNSPod 改 A 记录:`@` 和 `www` 从 `76.76.21.21` 改成服务器公网 IP
+7. footer 加备案号链接
+
+预计 30 分钟-1 小时完成。
+
+**iOS app 后端 API 启动信号**:用户说"开始做 iOS app 后端" → Claude 帮装 Node.js/Python + MySQL + 写第一版 API,跑在同一台服务器上,通过 `api.backtap.cn` 子域对外服务。
 
 ---
 
