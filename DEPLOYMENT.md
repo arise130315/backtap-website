@@ -1,6 +1,7 @@
 # DEPLOYMENT.md — 部署架构与运维
 
-> 最终选定方案:**Vercel + DNSPod 软接入**(不走 ICP 备案)。
+> ⚠️ **架构已于 2026-06-06 变更为正规备案方案**:DNSPod → 腾讯云轻量服务器(广州 119.29.119.124),Nginx + Let's Encrypt(acme.sh 自动续期),备案号 粤ICP备2026072152号。下方原 **Vercel 软接入方案降级为灾备**保留(代码仍 push GitHub 同步,出问题可切回)。迁移全过程见 `CONTEXT.md` 的 2026-06-06 日志。
+> ~~最终选定方案:Vercel + DNSPod 软接入(不走 ICP 备案)。~~
 > 当前生产环境:`https://backtap.cn`、`https://www.backtap.cn` 、`https://backtap-website.vercel.app`。
 
 ---

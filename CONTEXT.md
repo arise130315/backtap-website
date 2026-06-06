@@ -7,12 +7,11 @@
 
 ## 当前进度
 
-**🎉 网站已上线运行**,生产环境:
-- `https://backtap.cn`(主域,307 跳转到 www)
-- `https://www.backtap.cn`(规范域)
-- `https://backtap-website.vercel.app`(Vercel 默认子域)
+**🎉 网站已上线运行(2026-06-06 起已切腾讯云服务器,备案合规闭环完成)**,生产环境:
+- `https://backtap.cn` / `https://www.backtap.cn`(均走服务器 + HTTPS)
+- `https://backtap-website.vercel.app`(Vercel 默认子域,**已降级为灾备**)
 
-**架构**:DNSPod → Vercel,见 `DEPLOYMENT.md`。**ICP 备案已通过(粤ICP备2026072152号),备案号已挂三页 footer**;但网站当前仍跑在 Vercel(境外),尚未切到备案绑定的腾讯云服务器,合规闭环待完成(详见下方 2026-06-06 会话日志)。
+**架构(2026-06-06 起)**:DNSPod → **腾讯云轻量服务器(广州,公网 119.29.119.124,实例 lhins-asfe6mul,CentOS 7.6)**。Nginx 1.20.1 跑静态站(root `/var/www/backtap-website`),HTTPS 用 Let's Encrypt(acme.sh + DNSPod API `dns_dp` 自动续期),备案号挂三页 footer。**ICP 备案:粤ICP备2026072152号**。Vercel 保留作灾备(平时 DNS 不指,出问题把 `@` 改回 `76.76.21.21`、`www` 改回 CNAME `cname.vercel-dns.com` 即恢复)。详见 `DEPLOYMENT.md` 与下方 2026-06-06 日志。
 
 ## 正在做什么
 
@@ -154,7 +153,7 @@
 > - 留给下次的尾巴
 > ```
 
-### 2026-06-06 (Claude Code) - 备案通过,挂备案号 + 部署上线
+### 2026-06-06 (Claude Code) - 备案通过 → 挂备案号 → 切腾讯云服务器上线(合规闭环完成)
 - **里程碑**:backtap.cn 域名 ICP 备案审核通过,备案号 **粤ICP备2026072152号**。
 - **挂备案号**(工信部硬性要求:footer 展示备案号文字 + 超链接到工信部系统 `https://beian.miit.gov.cn/`):
   - `index.html`(footer 第 445 区块):版权号外包一层 flex,把备案号链接和「© 2026…」放同一组左对齐,「一款极简的识屏工具」仍右对齐。
@@ -163,9 +162,20 @@
 - **部署**:`git push` → Vercel 自动部署。当前 backtap.cn 的 DNS 仍指向 Vercel(76.76.21.21),所以备案号 30-60 秒后即时在 backtap.cn 生效。
 - **顺带提交**:上次 05-28 改名会话遗留未提交的文档同步(AGENTS.md / DEPLOYMENT.md / CONTEXT.md 里旧路径 `SnapTranslate_website` → `backtap-website`),内容正确,本次一并提交。
 - **未纳入提交**:工作区里 `CONTEXT_副本.md`(疑似用户手动备份)留在原地,不进仓库。
+- **✅ 合规闭环已完成(同日继续,用户选择立刻切)**:把主源从 Vercel 迁到备案绑定的腾讯云轻量服务器。全过程:
+  - **服务器**:腾讯云轻量(广州),公网 IP **119.29.119.124**,实例 `lhins-asfe6mul`,CentOS 7.6,root,网页终端 OrcaTerm + TAT 免密登录。`SELinux=Disabled`、`firewalld` 未运行(只靠控制台防火墙)。
+  - **环境**:`yum install -y nginx git`(走腾讯云内网镜像,CentOS7 EOL 无影响) → nginx 1.20.1。控制台「防火墙」放行 TCP **80/443**。
+  - **代码**:GitHub `git clone` 弱网屡断(RPC failed / early EOF,含浅克隆也失败)。最终用 `curl -L codeload.github.com/arise130315/backtap-website/tar.gz/refs/heads/main` 下载 tarball 成功 → 解压到 `/var/www/backtap-website`(`--strip-components=1`)。
+  - **Nginx 配置**:`/etc/nginx/conf.d/backtap.conf`(80 → 301 跳 https;443 ssl http2;`server_name backtap.cn www.backtap.cn`;root 指向站点目录)。用 `printf` 单行写避免网页终端多行粘连坑。
+  - **HTTPS**:`acme.sh`(gitee 镜像装,v3.1.3)+ DNSPod API(`dns_dp`,DP_Id=631126)DNS-01 验证 → 签 Let's Encrypt 证书(backtap.cn + www,90天)。证书装 `/etc/nginx/ssl/`,`--install-cert` 已设 `reloadcmd`,**cron 自动续期**。
+  - **DNS 切换**:用 DNSPod API `Record.Modify` 把 `@` 的 A `76.76.21.21`→`119.29.119.124`(record_id 2299967360)、`www` 的 CNAME→A `119.29.119.124`(record_id 2299967533)。权威即时生效,公共 DNS 传播中。
+  - **验证**:`https://backtap.cn` + `www` 均 HTTP/2 200、备案号在、80 强制跳 https、证书 Let's Encrypt 有效。(本地 Mac 验证时注意系统代理会忽略 `--resolve`,需加 `--noproxy '*'`。)
 - **留给下次的尾巴**:
-  - ⚠️ **合规闭环还差一步**:备案绑定的是腾讯云轻量服务器,但网站此刻实际仍跑在 Vercel(境外)。接入信息与备案资源不一致,管局抽查时小概率要求整改。**真正合规闭环 = 把主源切到那台腾讯云服务器**(本文件上方「最终架构 / 迁移步骤」已规划:SSH 装 Nginx + 上传 + Let's Encrypt + 改 DNS A 记录,约 30-60 分钟,需用户配合)。本次结束已询问用户是否立刻切。
-  - 切服务器后记得:DNS A 记录从 `76.76.21.21` 改成服务器公网 IP,Vercel 保留作灾备。
+  - ✅ **更新网站流程已建立**(2026-06-06 验证通过):服务器有 `/root/update-site.sh`(`curl` 拉 codeload tarball + 原子替换 + 旧版备份到 `.old`)。**日常更新三步**:① 本地改代码 → ② `git push` → ③ 服务器跑 `bash /root/update-site.sh`(腾讯云控制台「执行命令」或 OrcaTerm 网页终端均可)。回滚:`rm -rf /var/www/backtap-website && mv /var/www/backtap-website.old /var/www/backtap-website`。
+  - 🔑 **DNSPod token 安全**:DP_Id=631126 + Token 已在本次对话明文出现,且存进服务器 `~/.acme.sh/account.conf`(供自动续期)。如要轮换需同步更新 acme.sh,否则续期失败。**当前未轮换。**
+  - **Vercel 灾备**:保留;代码仍可 push GitHub(Vercel 自动同步)。服务器挂了把 DNS 改回 Vercel 即恢复(见上方「当前进度」)。
+  - 本地 `CONTEXT_副本.md` 仍未跟踪/未处理。
+  - 本文件「正在做什么 / 下一步打算 / 备案进度」等旧段落记的是"计划备案 + 计划切服务器",现已全部落地,**下次可清理精简**。
 
 ### 2026-05-28 (Claude Code) - 仓库 + 本地目录改名为 backtap-website
 - **背景**:统一品牌名,旧 `SnapTranslate_website` 跟域名 `backtap.cn` 不对应,改成 `backtap-website` 与产品域名一致。
