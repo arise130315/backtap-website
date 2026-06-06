@@ -4,8 +4,8 @@
 
 `iOS快捷翻译` 的官方网站,负责**功能介绍 + 应用下载入口**。
 
-- 本地路径:`~/Desktop/iOS_SnapTranslate_website`
-- GitHub:https://github.com/arise130315/SnapTranslate_website
+- 本地路径:`~/Desktop/backtap-website`
+- GitHub:https://github.com/arise130315/backtap-website
 - 配套主产品:`~/Desktop/iOS快捷翻译`(iOS 应用本体)
 
 ---

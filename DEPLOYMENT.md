@@ -14,7 +14,7 @@ DNSPod (域名解析,腾讯云资产)
     ↓
 Vercel 全球边缘网络 (CDN + SSL 终止)
     ↓
-Vercel 拉取 GitHub: arise130315/SnapTranslate_website (main 分支)
+Vercel 拉取 GitHub: arise130315/backtap-website (main 分支)
     ↓
 静态文件直出 (零构建,Application Preset = Other,见 vercel.json)
 ```
@@ -44,7 +44,7 @@ Vercel 拉取 GitHub: arise130315/SnapTranslate_website (main 分支)
 **写完 + commit + push 即可,3 分钟自动上线。**
 
 ```bash
-cd ~/Desktop/iOS_SnapTranslate_website
+cd ~/Desktop/backtap-website
 # 改完 HTML / 图片 / 视频
 git add .
 git commit -m "改了什么"

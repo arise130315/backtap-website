@@ -12,7 +12,7 @@
 - `https://www.backtap.cn`(规范域)
 - `https://backtap-website.vercel.app`(Vercel 默认子域)
 
-**架构**:DNSPod → Vercel,见 `DEPLOYMENT.md`。**走"软接入"路径,未走 ICP 备案**。
+**架构**:DNSPod → Vercel,见 `DEPLOYMENT.md`。**ICP 备案已通过(粤ICP备2026072152号),备案号已挂三页 footer**;但网站当前仍跑在 Vercel(境外),尚未切到备案绑定的腾讯云服务器,合规闭环待完成(详见下方 2026-06-06 会话日志)。
 
 ## 正在做什么
 
@@ -100,7 +100,7 @@
 
 1. SSH 登录服务器(腾讯云控制台一键登录)
 2. `yum install nginx` 装 Nginx
-3. `rsync ~/Desktop/iOS_SnapTranslate_website/ user@ip:/var/www/` 上传文件
+3. `rsync ~/Desktop/backtap-website/ user@ip:/var/www/` 上传文件
 4. 配 nginx.conf(Claude 写好,用户复制粘贴)
 5. Let's Encrypt 签 HTTPS 证书 + cron 自动续期
 6. DNSPod 改 A 记录:`@` 和 `www` 从 `76.76.21.21` 改成服务器公网 IP
@@ -153,6 +153,32 @@
 > - 关键改动文件
 > - 留给下次的尾巴
 > ```
+
+### 2026-06-06 (Claude Code) - 备案通过,挂备案号 + 部署上线
+- **里程碑**:backtap.cn 域名 ICP 备案审核通过,备案号 **粤ICP备2026072152号**。
+- **挂备案号**(工信部硬性要求:footer 展示备案号文字 + 超链接到工信部系统 `https://beian.miit.gov.cn/`):
+  - `index.html`(footer 第 445 区块):版权号外包一层 flex,把备案号链接和「© 2026…」放同一组左对齐,「一款极简的识屏工具」仍右对齐。
+  - `privacy.html`(L139)、`tutorial.html`(L91):居中版权行后用 `ml-2` 接备案号链接。
+  - 三处统一写法:`<a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" class="hover:text-ink-900 transition-colors">粤ICP备2026072152号</a>`,沿用现有 footer 链接风格,无新增 CSS。
+- **部署**:`git push` → Vercel 自动部署。当前 backtap.cn 的 DNS 仍指向 Vercel(76.76.21.21),所以备案号 30-60 秒后即时在 backtap.cn 生效。
+- **顺带提交**:上次 05-28 改名会话遗留未提交的文档同步(AGENTS.md / DEPLOYMENT.md / CONTEXT.md 里旧路径 `SnapTranslate_website` → `backtap-website`),内容正确,本次一并提交。
+- **未纳入提交**:工作区里 `CONTEXT_副本.md`(疑似用户手动备份)留在原地,不进仓库。
+- **留给下次的尾巴**:
+  - ⚠️ **合规闭环还差一步**:备案绑定的是腾讯云轻量服务器,但网站此刻实际仍跑在 Vercel(境外)。接入信息与备案资源不一致,管局抽查时小概率要求整改。**真正合规闭环 = 把主源切到那台腾讯云服务器**(本文件上方「最终架构 / 迁移步骤」已规划:SSH 装 Nginx + 上传 + Let's Encrypt + 改 DNS A 记录,约 30-60 分钟,需用户配合)。本次结束已询问用户是否立刻切。
+  - 切服务器后记得:DNS A 记录从 `76.76.21.21` 改成服务器公网 IP,Vercel 保留作灾备。
+
+### 2026-05-28 (Claude Code) - 仓库 + 本地目录改名为 backtap-website
+- **背景**:统一品牌名,旧 `SnapTranslate_website` 跟域名 `backtap.cn` 不对应,改成 `backtap-website` 与产品域名一致。
+- **执行三件套**:
+  1. `gh repo rename` 把 GitHub 仓库 `arise130315/SnapTranslate_website` → `arise130315/backtap-website`(GitHub 自动保留旧 URL 的 301 重定向)。
+  2. `git remote set-url origin` 更新本地 remote URL。
+  3. `mv` 本地文件夹 `~/Desktop/iOS_SnapTranslate_website` → `~/Desktop/backtap-website`。
+- **关联文档同步**:`AGENTS.md`(L7-8)、`CONTEXT.md`(L103、L259)、`DEPLOYMENT.md`(L17、L47)里的路径/URL 全部更新。全局配置 `~/.claude/CLAUDE.md`、`~/.codex/AGENTS.md`、`~/.shared-agent-memory/GLOBAL.md` 第 25 行的项目登记表也一并更新。
+- **不动**:中文显示名「iOS快捷翻译官网」、AGENTS.md 标题、产品本身的展示文案保持不变(品牌外观不变,仅仓库工程标识改了)。
+- **验证**:`gh repo view` 确认远端新名生效;`git ls-remote` 连通新 URL 成功;`grep -rn "SnapTranslate_website\|iOS_SnapTranslate_website"` 全局无残留。
+- **留给下次的尾巴**:
+  - **Vercel** 关联仓库通过 GitHub App 内部 ID 跟踪,理论上自动跟上重命名。建议下次有空登录 Vercel dashboard 看一眼 Settings → Git 那里显示的仓库名是不是已经变成 `backtap-website`;如果没变可以 Disconnect 再 Reconnect 一次。
+  - 旧 GitHub URL(`...SnapTranslate_website`)会一直保留 301,任何残留在外部文档/书签的旧链接不会断,但建议看到就改。
 
 ### 2026-05-27 (续 5) (Claude Code) - 视频 poster + preload 调整
 - 用户反馈国内访问慢、视频看不见。诊断后确认:
@@ -256,7 +282,7 @@
   2. 中途切到:腾讯云 COS 桶建好、12 个文件上传完成、Content-Type 修正,但发起备案时发现腾讯云**不接受 COS 作为备案资源**,只接受云服务器/轻量服务器/备案授权码,意味着备案至少多花 ¥99/年。
   3. 用户决策:放弃备案,走软接入 + Vercel 路径。
 - **Vercel 部署**:
-  - 创建 Vercel 项目 `backtap-website`,关联 GitHub `arise130315/SnapTranslate_website`,main 分支。
+  - 创建 Vercel 项目 `backtap-website`,关联 GitHub `arise130315/backtap-website`,main 分支。
   - 首次部署 404,原因:Vercel 在 "Other" preset 下检测到 `public/` 目录就当作输出目录。修复:加 `vercel.json` 显式 `outputDirectory: "."`,push 后 Vercel 自动重新部署成功。
   - Vercel 默认子域 `backtap-website.vercel.app` 上线。
 - **域名绑定**:
