@@ -66,9 +66,7 @@ Nginx(80 → 301 跳 https;443 ssl http2)
 
 ## 内容更新流程
 
-**核心:改完代码 → `git push` 到 GitHub `main` → 让服务器拉取最新代码并替换站点目录。**
-
-### 第 1、2 步(本地)
+**已配置自动部署(cron 轮询)。日常更新只需:**
 
 ```bash
 # 改完 HTML / 图片 / 视频
@@ -77,25 +75,37 @@ git commit -m "改了什么"
 git push origin main
 ```
 
-### 第 3 步(服务器拉取并上线)
+push 后**约 2 分钟内自动上线**,无需登录服务器。
 
-服务器上有更新脚本 `/root/update-site.sh`,逻辑:`curl` 从 GitHub codeload 拉最新 `main` 的 tarball → 原子替换 `/var/www/backtap-website` → 旧版本备份到 `/var/www/backtap-website.old`。
+### 自动部署机制(cron 轮询)
 
-在**腾讯云控制台**执行(「执行命令」TAT 或 OrcaTerm 网页终端任选其一):
+- root 的 crontab 每 2 分钟跑一次 `/root/auto-deploy.sh`。
+- 脚本用 `git ls-remote` 查 GitHub `main` 最新 commit SHA(只查引用、不下载),与上次部署的 SHA(`/root/.backtap-deployed-sha`)比对。
+- **仅当 SHA 变化**时才调用 `/root/update-site.sh` 拉取 tarball → 原子替换 `/var/www/backtap-website` → 旧版备份到 `.old`,然后记录新 SHA。无变化则静默退出,不下载。
+- 日志:`/var/log/backtap-autodeploy.log`。
+- 脚本源码在仓库 `deploy/auto-deploy.sh`,安装器 `deploy/install-autodeploy.sh`。
+
+**安装 / 重装**(控制台 root 跑一次即可,脚本随站点目录一起更新):
 
 ```bash
-bash /root/update-site.sh
+sudo bash /var/www/backtap-website/deploy/install-autodeploy.sh
 ```
 
-跑完后 Nginx 直接直出新文件,即时生效。
+**常用运维**:
 
-> ℹ️ **关于"自动部署"**:据称服务器上可能配置了自动拉取流程(如 cron 定时跑 `update-site.sh`),`git push` 后无需手动到控制台执行。但该机制**未记录在仓库或 `CONTEXT.md`,也无法从本地验证**(仓库无 GitHub Actions;日志里唯一的 cron 是 HTTPS 证书续期,不是内容更新)。
->
-> **自查方法**:在控制台跑 `crontab -l`,看是否有定时调用 `update-site.sh` 的条目。
-> - 若有 → 说明确实是自动的,`git push` 后等待对应间隔即可生效,把上面的"第 3 步"改成"等 cron 自动触发"。
-> - 若没有 → 自动流程不存在,仍需手动跑第 3 步。
->
-> 在确认之前,**以手动跑 `update-site.sh` 为准**,这是 2026-06-06 验证过的可靠方式。
+```bash
+sudo crontab -l                              # 查看定时任务
+tail -f /var/log/backtap-autodeploy.log      # 看自动部署日志
+sudo crontab -l | grep -v auto-deploy.sh | sudo crontab -   # 停用自动部署
+```
+
+### 手动立即部署(应急 / 不想等 2 分钟)
+
+```bash
+sudo bash /root/update-site.sh
+```
+
+> ⚠️ 注意 `/root/` 目录只有 root 能进,普通用户 `lighthouse` 直接跑会 `Permission denied`,必须加 `sudo`。
 
 ### 回滚
 
