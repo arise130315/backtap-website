@@ -1,8 +1,14 @@
 # DEPLOYMENT.md — 部署架构与运维
 
-> ⚠️ **架构已于 2026-06-06 变更为正规备案方案**:DNSPod → 腾讯云轻量服务器(广州 119.29.119.124),Nginx + Let's Encrypt(acme.sh 自动续期),备案号 粤ICP备2026072152号。下方原 **Vercel 软接入方案降级为灾备**保留(代码仍 push GitHub 同步,出问题可切回)。迁移全过程见 `CONTEXT.md` 的 2026-06-06 日志。
-> ~~最终选定方案:Vercel + DNSPod 软接入(不走 ICP 备案)。~~
-> 当前生产环境:`https://backtap.cn`、`https://www.backtap.cn` 、`https://backtap-website.vercel.app`。
+> **当前生产环境(2026-06-06 起)**:DNSPod → **腾讯云轻量应用服务器(广州,119.29.119.124)** → Nginx 静态直出。
+> HTTPS 用 Let's Encrypt(acme.sh + DNSPod API DNS-01,cron 自动续期)。已完成 ICP 备案:**粤ICP备2026072152号**。
+> 旧的 Vercel 软接入方案已**降级为灾备**(代码仍同步到 GitHub,DNS 平时不指向它,出问题可切回)。
+> 迁移全过程见 `CONTEXT.md` 的 2026-06-06 日志。
+
+生产访问入口:
+- `https://www.backtap.cn` — 网站本体
+- `https://backtap.cn` — 301 跳转到 `https://www.backtap.cn`
+- `https://backtap-website.vercel.app` — Vercel 灾备入口(备用)
 
 ---
 
@@ -11,140 +17,139 @@
 ```
 用户浏览器
     ↓
-DNSPod (域名解析,腾讯云资产)
+DNSPod(域名解析,腾讯云资产)
     ↓
-Vercel 全球边缘网络 (CDN + SSL 终止)
+腾讯云轻量应用服务器(广州,119.29.119.124)
     ↓
-Vercel 拉取 GitHub: arise130315/backtap-website (main 分支)
+Nginx(80 → 301 跳 https;443 ssl http2)
     ↓
-静态文件直出 (零构建,Application Preset = Other,见 vercel.json)
+静态文件直出  /var/www/backtap-website
 ```
 
-### DNS 配置(已生效)
+### 服务器信息
 
-| 主机记录 | 类型 | 记录值 | TTL |
+| 项目 | 值 |
+|---|---|
+| 提供商 | 腾讯云轻量应用服务器(广州) |
+| 公网 IP | `119.29.119.124` |
+| 实例 ID | `lhins-asfe6mul` |
+| 系统 | CentOS 7.6,root |
+| 登录方式 | 腾讯云控制台 OrcaTerm 网页终端 +「执行命令」(TAT 免密) |
+| 站点根目录 | `/var/www/backtap-website` |
+| Web 服务 | Nginx 1.20.1 |
+| 安全组 | 控制台「防火墙」放行 TCP **80/443**(`firewalld` 未运行,`SELinux=Disabled`) |
+
+> ⚠️ 本地未配置免密 SSH,无法直接 SSH 进服务器。所有服务器操作走**腾讯云控制台**(OrcaTerm 网页终端或「执行命令」TAT)。
+
+### DNS 配置(DNSPod,已生效)
+
+| 主机记录 | 类型 | 记录值 | record_id |
 |---|---|---|---|
-| `@` | A | `76.76.21.21` | 600 |
-| `www` | CNAME | `cname.vercel-dns.com` | 600 |
+| `@` | A | `119.29.119.124` | 2299967360 |
+| `www` | A | `119.29.119.124` | 2299967533 |
 
-### 域名跳转关系
+> 历史:迁移前 `@` 指向 Vercel `76.76.21.21`、`www` 为 CNAME `cname.vercel-dns.com`。如需切回 Vercel 灾备,把这两条改回即可。
 
-- `https://backtap.cn` → 307 → `https://www.backtap.cn`(Vercel 自动配置)
-- `https://www.backtap.cn` → 网站本体
-- `https://backtap-website.vercel.app` → 网站本体(Vercel 默认子域,备用入口)
+### Nginx 配置
+
+- 配置文件:`/etc/nginx/conf.d/backtap.conf`
+- 80 端口:`301` 跳转到 https
+- 443 端口:`ssl http2`,`server_name backtap.cn www.backtap.cn`,`root` 指向 `/var/www/backtap-website`
 
 ### HTTPS
 
-- Vercel 自动申请并续期 Let's Encrypt 证书,**无需手工维护**。
-- 强制 HSTS(max-age=2 年)。
+- `acme.sh`(v3.1.3)+ DNSPod API(`dns_dp`,`DP_Id=631126`)走 **DNS-01** 验证签发 Let's Encrypt 证书(`backtap.cn` + `www`,90 天有效期)。
+- 证书安装在 `/etc/nginx/ssl/`,`acme.sh --install-cert` 已设 `reloadcmd`。
+- **cron 自动续期**,无需手工维护。
 
 ---
 
 ## 内容更新流程
 
-**写完 + commit + push 即可,3 分钟自动上线。**
+**核心:改完代码 → `git push` 到 GitHub `main` → 让服务器拉取最新代码并替换站点目录。**
+
+### 第 1、2 步(本地)
 
 ```bash
-cd ~/Desktop/backtap-website
 # 改完 HTML / 图片 / 视频
 git add .
 git commit -m "改了什么"
 git push origin main
 ```
 
-Vercel 检测到 GitHub 新 commit,**自动重新部署**,30-60 秒后生产环境更新。
+### 第 3 步(服务器拉取并上线)
+
+服务器上有更新脚本 `/root/update-site.sh`,逻辑:`curl` 从 GitHub codeload 拉最新 `main` 的 tarball → 原子替换 `/var/www/backtap-website` → 旧版本备份到 `/var/www/backtap-website.old`。
+
+在**腾讯云控制台**执行(「执行命令」TAT 或 OrcaTerm 网页终端任选其一):
+
+```bash
+bash /root/update-site.sh
+```
+
+跑完后 Nginx 直接直出新文件,即时生效。
+
+> ℹ️ **关于"自动部署"**:据称服务器上可能配置了自动拉取流程(如 cron 定时跑 `update-site.sh`),`git push` 后无需手动到控制台执行。但该机制**未记录在仓库或 `CONTEXT.md`,也无法从本地验证**(仓库无 GitHub Actions;日志里唯一的 cron 是 HTTPS 证书续期,不是内容更新)。
+>
+> **自查方法**:在控制台跑 `crontab -l`,看是否有定时调用 `update-site.sh` 的条目。
+> - 若有 → 说明确实是自动的,`git push` 后等待对应间隔即可生效,把上面的"第 3 步"改成"等 cron 自动触发"。
+> - 若没有 → 自动流程不存在,仍需手动跑第 3 步。
+>
+> 在确认之前,**以手动跑 `update-site.sh` 为准**,这是 2026-06-06 验证过的可靠方式。
+
+### 回滚
+
+```bash
+rm -rf /var/www/backtap-website && mv /var/www/backtap-website.old /var/www/backtap-website
+```
 
 ---
 
-## 关键风险与应对
+## 微信域名验证文件(勿误删)
 
-### 软接入风险
+根目录 `c8f7f2da7d285bb6826d4a7996ace6ec.txt`(微信域名归属验证,内容 40 字节)。
 
-**事实**:`.cn` 域名解析到境外服务(Vercel)按工信部规定需要 ICP 备案,目前未备案。
-
-**实际情况**:
-- 工信部不会自动监控所有 .cn 域名的解析目标,**主要靠举报和抽查**。
-- 小流量个人独立开发者站点被点名的概率非常低。
-- 一旦被工信部要求整改,DNSPod 会通知,有 7-15 天缓冲期补办备案或者改解析。
-
-**应对预案**:
-1. **如果被要求整改** → 启动 ICP 备案流程(见下文备案路径),备案过程中网站可临时停止解析或保持现状。
-2. **如果不被要求** → 维持现状,网站长期稳定。
-
-### 国内访问速度
-
-Vercel 边缘节点最近的在香港 / 新加坡 / 日本(没有大陆节点)。国内访问首次加载预估 2-5 秒,后续走浏览器缓存会快。
-
-**如果未来发现访问慢成为大问题**:走 ICP 备案路径,把国内流量切到腾讯云 CDN+COS。文件已经躺在 COS 里(`backtap-website-1310488725`),备案通过后 10 分钟可上线。
+- 该文件已纳入 git 仓库,`update-site.sh` 替换站点目录时会一并带上。
+- 历史上服务器那份曾是手动写入,现仓库已有同名文件,正常更新流程不会丢失。
+- 若哪天微信复检且较真要求 http 直出 `200`(不跟随 301),在 nginx 80 端口 server 块加:
+  `location = /c8f7f2da7d285bb6826d4a7996ace6ec.txt { root /var/www/backtap-website; }`
 
 ---
 
-## 备用路径:ICP 备案(以后想正规化时走)
+## 灾备:Vercel(已降级保留)
 
-这是**当前没走、但是文件资产已准备好**的路径。任何时候想升级到"正规备案"都可以补办,不影响当前运行。
+- 代码仍 `push` 到 GitHub `arise130315/backtap-website`(`main`),Vercel 项目仍连着仓库,会继续自动构建 `backtap-website.vercel.app`。
+- DNS 平时**不指向** Vercel。生产出问题时,把 DNSPod 的 `@`/`www` 记录改回 Vercel(`76.76.21.21` / `cname.vercel-dns.com`)即可临时切回。
+- `vercel.json` 保留 `outputDirectory: "."`(静态零构建,Application Preset = Other)。
 
-### 备案需要的资源(关键变更)
+---
 
-> ⚠️ 当初以为 COS 能作为备案资源,实际不行。腾讯云备案系统**只接受云服务器/轻量服务器/备案授权码**作为绑定资源。所以备案至少要再多花 ¥99-120/年买一台轻量服务器。
+## 备案信息
 
-### 备案完整流程(等真要做时再展开)
-
-1. 买一台腾讯云**轻量应用服务器**(中国大陆地域,1 年套餐)
-2. 控制台 → 备案系统 → 新增备案
-3. 网站信息按下方模板填(避免过严审核)
-4. 阿里云 / 腾讯云 / 工信部三级审核 2-3 周
-5. 备案号下来后,改三个 HTML 的 footer 加备案号
-6. 把 `backtap.cn` 在 DNSPod 的 A 记录从 `76.76.21.21` 改成腾讯云 CDN 提供的 CNAME 值
-
-### 备案表填写模板(直接抄)
-
-```
-主办单位性质:个人
-证件类型:居民身份证
-主办者名称:[本人姓名]
-证件号码:[身份证号]
-
-应用服务类型:网站/域名
-域名:backtap.cn
-
-云资源:轻量应用服务器(选你买的那台实例)
-
-网站名称:快捷识屏
-网站语言:中文简体
-是否涉及前置审批:否
-网站内容描述:
-  本网站为个人开发者作品 iOS 工具应用"快捷识屏"的官方介绍
-  页面,展示应用功能、使用教程及下载入口。网站为纯静态展示
-  页面,不提供用户注册、评论、内容发布等交互功能,不收集用
-  户个人信息。网站负责人为独立开发者本人,自有著作权。
-```
-
-**填写要点**:
-- 网站名称写品牌名"快捷识屏",不要带"翻译/AI/工具"
-- 服务内容选「博客/个人空间」最稳
-- 描述明确写"纯静态展示"、"不收集用户信息"
+- ICP 备案号:**粤ICP备2026072152号**(个人 / 纯静态展示页面)。
+- 三个 HTML 的 footer 已挂备案号链接。
+- 备案绑定资源:腾讯云轻量应用服务器(就是当前这台 119.29.119.124)。
 
 ---
 
 ## 现有 COS 资产(暂未启用)
 
-桶 `backtap-website-1310488725`(广州地域)已经包含完整网站文件 + 静态托管已开启。当前没接入 backtap.cn,作为**备案路径的预置资产**保留。如果决定永远不备案,可以删除以省存储费(每月约几分钱)。
+桶 `backtap-website-1310488725`(广州地域)含完整网站文件 + 静态托管已开启,作为**未来切腾讯云 CDN 加速国内访问**的预置资产保留。如果将来访问量大、要加速国内访问,可走「备案已完成 → 腾讯云 CDN + COS」路径。
 
 ---
 
 ## 文件清单(对外服务)
 
 ```
-backtap.cn/
+backtap.cn/  (= /var/www/backtap-website/)
 ├── index.html              首页
 ├── privacy.html            隐私政策
 ├── tutorial.html           使用教程
+├── c8f7f2da...ace6ec.txt   微信域名验证文件
 └── public/
-    ├── fonts/
-    │   ├── InterVariable.woff2          (Inter 可变字体)
-    │   └── AlibabaPuHuiTi-2-105-Heavy.ttf (中文字体)
-    ├── images/             3 张图(logo, img1, img2)
-    └── videos/             4 个 mp4 演示视频
+    ├── fonts/              字体(AlibabaPuHuiTi 等)
+    ├── images/             图片(logo, img1, img2 等)
+    └── videos/             演示视频(mp4)
 ```
 
 ---
