@@ -127,19 +127,24 @@
     }
 
     /* Feature video container — videos already include phone chrome */
-    /* 窄屏:视频固定 540px 高(与原 600px 卡片的 90% 一致),卡片背景收缩到与视频同尺寸;≥768px 恢复原布局 */
+    /* 窄屏:视频占满容器宽度、高度等比缩放(720/1212 为视频固有宽高比,避免加载前高度跳动),卡片背景与视频同尺寸;≥768px 恢复原布局 */
     .phone-mockup {
-      height: 540px;
+      width: 100%;
     }
     .phone-mockup video {
-      height: 100%;
-      width: auto;
-      max-width: 100%;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 720 / 1212;
       display: block;
     }
     @media (min-width: 768px) {
       .phone-mockup {
+        width: auto;
         height: 90%;
+      }
+      .phone-mockup video {
+        width: auto;
+        height: 100%;
       }
     }
   </style>
@@ -314,7 +319,7 @@
                 轻敲背面，对当前屏幕的外文进行识别，保留原版面布局的前提下翻译显示。
               </p>
             </div>
-            <div class="rounded-[32px] overflow-hidden bg-[#d2eafb] w-fit max-w-full mx-auto h-auto md:w-auto md:mx-0 md:h-[600px] flex items-center justify-center">
+            <div class="rounded-[32px] overflow-hidden bg-[#d2eafb] h-auto md:h-[600px] flex items-center justify-center">
               <div class="phone-mockup">
                 <video autoplay muted loop playsinline preload="auto" poster="public/images/poster_快捷翻译.webp">
                   <source src="public/videos/快捷翻译.mp4" type="video/mp4" />
@@ -331,7 +336,7 @@
                 轻敲背面，支持对当前屏幕内容进行快速智能分析解读。
               </p>
             </div>
-            <div class="rounded-[32px] overflow-hidden bg-[#afebcc] w-fit max-w-full mx-auto h-auto md:w-auto md:mx-0 md:h-[600px] flex items-center justify-center">
+            <div class="rounded-[32px] overflow-hidden bg-[#afebcc] h-auto md:h-[600px] flex items-center justify-center">
               <div class="phone-mockup">
                 <video autoplay muted loop playsinline preload="auto" poster="public/images/poster_快捷分析.webp">
                   <source src="public/videos/快捷分析.mp4" type="video/mp4" />
