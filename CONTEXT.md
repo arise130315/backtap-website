@@ -153,6 +153,15 @@
 > - 留给下次的尾巴
 > ```
 
+### 2026-06-11 (Claude Code) - 窄屏下功能卡片背景收缩到与视频同尺寸
+- **需求**:窄屏(<768px)下「快捷翻译/快捷分析」两张卡片的彩色背景块是全宽 600px 高,而视频只有约 320×540,两侧留大片空底色;要求窄屏下背景尺寸与 video 完全一致。
+- **改动**:`index.html` 两处:
+  - `<style>` 内 `.phone-mockup`(约 L129-145):基础样式改为固定 `height: 540px`(= 原 600px 卡片的 90%,视频视觉尺寸不变),video 加 `max-width: 100%` 防超窄屏溢出;新增 `@media (min-width: 768px)` 恢复 `height: 90%`。
+  - 两张卡片背景 div(现 L317、L334):`h-[600px]` 改为 `w-fit max-w-full mx-auto h-auto overflow-hidden` + `md:w-auto md:mx-0 md:h-[600px]`。窄屏卡片收缩到正好包住视频并水平居中,`overflow-hidden` 让视频直角被卡片 32px 圆角裁掉;≥768px 布局与改前完全一致。
+- **顺手新增**:`.claude/launch.json`(本地预览配置,`npx http-server . -p 4173`;注意必须显式传 `.`,否则 http-server 默认优先服务 `./public` 子目录)。要不要进 git 由用户定。
+- **验证**:本地起 http-server 用预览面板实测三档宽度——375px 和 700px 下卡片 320.8×540 与 video 尺寸完全一致且水平居中;1280px 下卡片 596×600、视频 540 高居中,与改前一致。
+- **留给下次的尾巴**:还没提交/部署。上线流程:`git push` 后到服务器跑 `bash /root/update-site.sh`(非 Vercel 自动)。
+
 ### 2026-06-07 (Claude Code) - 首页常见问题新增 2 张卡片
 - **需求**:FAQ 区原有 4 张卡片,用户要求再加 2 张(对比常规翻译 app、核心能力补充)。
 - **改动**:`index.html` FAQ 区(原 L360-363 第 4 张卡片后)插入两张卡片,结构、class、`data-i18n` 风格与现有完全一致:
