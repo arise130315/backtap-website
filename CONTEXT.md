@@ -160,7 +160,8 @@
   - 两张卡片背景 div(现 L317、L334):`h-[600px]` 改为 `w-fit max-w-full mx-auto h-auto overflow-hidden` + `md:w-auto md:mx-0 md:h-[600px]`。窄屏卡片收缩到正好包住视频并水平居中,`overflow-hidden` 让视频直角被卡片 32px 圆角裁掉;≥768px 布局与改前完全一致。
 - **顺手新增**:`.claude/launch.json`(本地预览配置,`npx http-server . -p 4173`;注意必须显式传 `.`,否则 http-server 默认优先服务 `./public` 子目录)。要不要进 git 由用户定。
 - **验证**:本地起 http-server 用预览面板实测三档宽度——375px 和 700px 下卡片 320.8×540 与 video 尺寸完全一致且水平居中;1280px 下卡片 596×600、视频 540 高居中,与改前一致。
-- **留给下次的尾巴**:还没提交/部署。上线流程:`git push` 后到服务器跑 `bash /root/update-site.sh`(非 Vercel 自动)。
+- **已上线**:提交 `775be1e`(推送时发现远端有 Codex 的 4 个新提交——移动端模块间距 + cron 自动部署脚本/文档,已把本提交重新接到其上)。`~/deploy-backtap.sh` 推送 + 触发服务器更新,curl 线上 HTML 确认新样式已生效。
+- **部署方式已升级(Codex 配的)**:服务器 root crontab 每 2 分钟跑 `/root/auto-deploy.sh` 轮询 GitHub,**`git push` 后约 2 分钟内自动上线**;`~/deploy-backtap.sh` 仍可用于立即部署。详见 `DEPLOYMENT.md`。
 
 ### 2026-06-07 (Claude Code) - 首页常见问题新增 2 张卡片
 - **需求**:FAQ 区原有 4 张卡片,用户要求再加 2 张(对比常规翻译 app、核心能力补充)。
